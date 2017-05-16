@@ -1,0 +1,11 @@
+name: Attribute-based Access Policies
+description: Define attribute-based entity access policies in configuration
+package: Access Control
+
+type: module
+core: 8.x
+
+dependencies:
+  entity_access_policies:entity_access_policies
+  attribute_access_policies:data_resolver
+  attribute_access_policies:typed_data_conditions
