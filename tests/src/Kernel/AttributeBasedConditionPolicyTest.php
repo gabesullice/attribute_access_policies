@@ -6,6 +6,10 @@ use Drupal\KernelTests\KernelTestBase;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Config\ImmutableConfig;
+use Drupal\Core\Language\LanguageInterface;
+use Drupal\Core\TypedData\TypedDataInterface;
+use Drupal\typed_data_conditions\EvaluatorInterface;
+use \Prophecy\Argument;
 
 /**
  * @coversDefaultClass \Drupal\attribute_access_policies\Plugin\entity_access_policies\Policy\AttributeBasedConditionPolicy
@@ -28,6 +32,7 @@ class AttributeBasedConditionPolicyTest extends KernelTestBase {
     'attribute_access_policies',
     'example_attribute_policy',
     'typed_data_conditions',
+    'serialization',
   ];
 
   /**
@@ -73,12 +78,21 @@ class AttributeBasedConditionPolicyTest extends KernelTestBase {
    * @covers ::getLocks
    */
   public function testGetLocks() {
-    $pass_entity = $this->prophesize(EntityInterface::class);
-    $pass_entity->getEntityTypeId()->willReturn('taxonomy_term');
+    $typed_data = $this->prophesize(TypedDataInterface::class);
 
-    ///$fail_entity = $this->prophesize(EntityInterface::class);
-    ///$fail_entity->getEntityTypeId()->willReturn('should_be_false');
-    $blue_team = $this->policyManager->createInstance('attribute_based_condition_policy:blue_team');
+    $language = $this->prophesize(LanguageInterface::class);
+
+    $pass_entity = $this->prophesize(EntityInterface::class);
+    $pass_entity->getEntityTypeId()->willReturn('example');
+    $pass_entity->getTypedData()->willReturn($typed_data->reveal());
+    $pass_entity->language()->willReturn($language->reveal());
+
+    $condition_group = $this->prophesize(EvaluatorInterface::class);
+    $condition_group->evaluate(Argument::type(TypedDataInterface::class))->willReturn(TRUE);
+
+    $policy_id = 'attribute_based_condition_policy:blue_team';
+    $blue_team = $this->policyManager->createInstance($policy_id);
+    $blue_team->setEntityCondition($condition_group->reveal());
 
     $this->assertFalse(empty($blue_team->getLocks($pass_entity->reveal())));
   }

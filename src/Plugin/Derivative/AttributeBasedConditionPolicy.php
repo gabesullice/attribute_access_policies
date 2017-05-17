@@ -70,14 +70,8 @@ class AttributeBasedConditionPolicy extends DeriverBase implements ContainerDeri
    * Helper method to define a new plugin definition.
    */
   protected function deriveDefinition($base_definition, $config) {
-    $entity_condition = $this->typedDataManager->create(
-      $this->typedDataManager->createDataDefinition('condition_group'),
-      $config->getEntityCondition()
-    );
-    $user_condition = $this->typedDataManager->create(
-      $this->typedDataManager->createDataDefinition('condition_group'),
-      $config->getUserCondition()
-    );
+    $entity_condition = $this->toTypedData($config->getEntityCondition());
+    $user_condition = $this->toTypedData($config->getUserCondition());
 
     $definition = $base_definition + [
       'entity_types' => $config->getEntityTypeIds(),
@@ -87,6 +81,32 @@ class AttributeBasedConditionPolicy extends DeriverBase implements ContainerDeri
     ];
 
     return $definition;
+  }
+
+  /**
+   * Helper method to create TypedData Conditions and ConditionGroups.
+   *
+   * Recursively turns config into TypedData Conditions and ConditionGroups.
+   */
+  protected function toTypedData($config) {
+    $config['members'] = array_map(function ($member) {
+      if ($member['type'] == 'condition') {
+        return $this->createTypedData('condition', $member);
+      }
+      else {
+        return $this->toTypedData($member);
+      }
+    }, $config['members']);
+
+    return $this->createTypedData('condition_group', $config);
+  }
+
+  /**
+   * Helper function to create TypedData instances.
+   */
+  protected function createTypedData($type, $data) {
+    $definition = $this->typedDataManager->createDataDefinition($type);
+    return $this->typedDataManager->create($definition, $data);
   }
 
 }

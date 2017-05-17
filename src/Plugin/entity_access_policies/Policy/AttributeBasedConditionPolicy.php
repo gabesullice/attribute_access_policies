@@ -4,8 +4,10 @@ namespace Drupal\attribute_access_policies\Plugin\entity_access_policies\Policy;
 
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
-use Drupal\entity_access_policies\Policy\PolicyBase;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\entity_access_policies\Policy\PolicyBase;
+use Drupal\entity_access_policies\Lock\DefaultLock;
+use Drupal\typed_data_conditions\EvaluatorInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -18,6 +20,16 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class AttributeBasedConditionPolicy extends PolicyBase implements ContainerFactoryPluginInterface {
 
   /**
+   * The default lock id.
+   */
+  const LOCK_ID = 1;
+
+  /**
+   * The default lock id.
+   */
+  const KEY_ID = 1;
+
+  /**
    * The plugin definition as provided by the plugin deriver.
    *
    * @see \Drupal\attribute_access_policies\Plugin\Derivative\AttributeBasedConditionPolicy
@@ -27,6 +39,13 @@ class AttributeBasedConditionPolicy extends PolicyBase implements ContainerFacto
   protected $pluginDefinition;
 
   /**
+   * The entity condition.
+   *
+   * @var \Drupal\typed_data_conditions\EvaluatorInterface
+   */
+  protected $entityCondition;
+
+  /**
    * Creates an instance of an AttributeBasedConditionPolicy.
    *
    * @var array $plugin_definition
@@ -34,6 +53,7 @@ class AttributeBasedConditionPolicy extends PolicyBase implements ContainerFacto
    */
   public function __construct(array $configuration, $plugin_id, $plugin_definition) {
     $this->pluginDefinition = $plugin_definition;
+    $this->entityCondition = $this->pluginDefinition['entity_condition'];
   }
 
   /**
@@ -55,9 +75,13 @@ class AttributeBasedConditionPolicy extends PolicyBase implements ContainerFacto
    * {@inheritdoc}
    */
   public function getLocks(EntityInterface $entity) {
-    $condition = $this->pluginDefinition['entity_condition'];
-    $applicable = $condition->evaluate($entity->getTypedData());
-    return $applicable;
+    if ($this->entityCondition->evaluate($entity->getTypedData())) {
+      $operations = $this->pluginDefinition['operations'];
+      $language = $entity->language();
+      $lock = DefaultLock::create(static::LOCK_ID, $operations, $language);
+      return [$lock];
+    }
+    return [];
   }
 
   /**
@@ -65,6 +89,13 @@ class AttributeBasedConditionPolicy extends PolicyBase implements ContainerFacto
    */
   public function getKeys(AccountInterface $account) {
     return [];
+  }
+
+  /**
+   * Set the entity condition.
+   */
+  public function setEntityCondition(EvaluatorInterface $condition) {
+    $this->entityCondition = $condition;
   }
 
 }
