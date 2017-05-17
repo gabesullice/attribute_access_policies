@@ -1,0 +1,22 @@
+id: 'blue_team'
+entity_types: ['node', 'taxonomy_term']
+operations: ['view', 'delete']
+entity_condition:
+  members:
+  - type: condition_group
+    conjunction: 'AND'
+    members:
+    - type: condition
+      property: 'field_team'
+      comparison: 'blue'
+    - type: condition
+      property: 'field_team'
+      comparison: 'blue'
+  - type: condition
+    property: 'field_team'
+    comparison: 'blue'
+user_condition:
+  members:
+  - type: condition
+    property: 'field_team'
+    comparison: 'blue'

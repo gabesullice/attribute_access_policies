@@ -1,0 +1,6 @@
+name: Example Attribute-based Access Policy
+description: Provides a configuration example of an attribute-based condition policy.
+package: Testing
+
+type: module
+core: 8.x

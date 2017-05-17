@@ -1,0 +1,25 @@
+attribute_access_policies.policy.*:
+  type: config_entity
+  label: 'Attribute-based Condition Policy'
+  mapping:
+    id:
+      type: string
+      label: 'ID'
+    entity_types:
+      type: sequence
+      label: 'Entity Types'
+      sequence:
+        type: string
+        label: 'Entity Type'
+    operations:
+      type: sequence
+      label: 'Operations'
+      sequence:
+        type: string
+        label: 'Operations'
+    entity_condition:
+      type: typed_data_conditions.condition_group
+      label: 'Entity Condition'
+    user_condition:
+      type: typed_data_conditions.condition_group
+      label: 'User Condition'
