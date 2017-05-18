@@ -91,7 +91,10 @@ class AttributeBasedConditionPolicy extends PolicyBase implements ContainerFacto
    */
   public function getKeys(AccountInterface $account) {
     $data = User::load($account->id())->getTypedData();
-    return [(integer) $this->userCondition->evaluate($data)];
+    if ($this->userCondition->evaluate($data)) {
+      return [1];
+    }
+    return [static::KEY_ID];
   }
 
   /**
