@@ -6,7 +6,7 @@ Attribute policies are written in YAML.
 
 ## Overview
 
-They english, attribute policies read like this: "If a user has a certain field value, and an entity has a certain value, the user should be able to do X, Y or Z to the entity."
+In english, attribute policies read like this: "If a user has a certain field value, and an entity has a certain value, the user should be able to do X, Y or Z to the entity."
 
 In YAML, they read like this:
 
@@ -50,10 +50,10 @@ You can go _craaazy_ with your conditions. There are two types of conditions tha
 
 **Property Paths**
 
-Property paths can follow the field names and properties of those paths. They can collect values from multi-value fields and can even travers entity references.
+Property paths can follow the field names and properties of those paths. They can collect values from multi-value fields and can even traverse entity references.
 
 The syntax is simple, just concatenate your field names, property names, and indices with dots `.`.
 
 Example: `uid.0.name.value`
 
-Remember that all fields in Drupal _actually are_ multi-value fields. So if you omit and index, you're going to get a **list** of values. Not a single value. Choose your operator accordingly. You can't compare a single value with a list. This would **not work** `5 = [1, 1, 2, 3, 5]`. However, this **would work** : `5 IN [1, 1, 2, 3, 5]`.
+Remember that all fields in Drupal actually are _multi-value_ fields. So if you omit an index, you're going to get a **list** of values. Not a single value. Choose your operator accordingly. You can't compare a single value with a list. This would **not work** `5 = [1, 1, 2, 3, 5]`. However, this **would work** : `5 IN [1, 1, 2, 3, 5]`.
