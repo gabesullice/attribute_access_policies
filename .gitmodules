@@ -1,0 +1,6 @@
+[submodule "modules/data_resolver"]
+	path = modules/data_resolver
+	url = git@github.com:gabesullice/data_resolver.git
+[submodule "modules/typed_data_conditions"]
+	path = modules/typed_data_conditions
+	url = git@github.com:gabesullice/typed_data_conditions.git
