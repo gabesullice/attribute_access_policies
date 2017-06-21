@@ -3,6 +3,6 @@
     "type": "drupal-module",
     "description": "Provide custom attribute-based access policies for any entity",
     "require": {
-      "gabesullice/entity_access_policies": "^1.x"
+      "gabesullice/entity_access_policies": "master"
     }
 }
